@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="container">
+            <form id="form" action="/upload" method="POST" style="margin-top: 15%; text-align: center;" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file">File</label>
+                    <input type="file" name="file" id="file">
+                    <input type="submit" id="upload" value="Upload" class="btn btn-primary">
+                </div>
+            </form>
+            <table id="table">
+                <thead>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Location</th>
+                    <th>Hobby</th>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="http://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <script>
+        $(function() {
+            // initialize DataTable, and declarations.
+            var $table = $('#table').DataTable({
+                columns: [
+                    { data: "name" },
+                    { data: "age" },
+                    { data: "location" },
+                    { data: "hobby"}
+                ]}),
+                $form = $('#form'),
+                formData;
+
+            // when #upload button is clicked
+            $('#upload').click(function(e){
+                e.preventDefault();// prevent page refresh
+
+                // validate if input file have file
+                if($('#file').val()){
+                    //  use FormData class, to ajax a file.
+                    formData = new FormData($form[0]);// $form[0], to get the HTML element because we use jQuery, otherwise document.getElementById('form') pure js.
+
+                    // ajax settings, POST to '/upload', 
+                    $.ajax({
+                        method: "POST",
+                        url: "/upload",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success : function(data) {
+                            // when succesfully, parse from string to JSON format.
+                            console.log(JSON.parse(data));
+
+                            // append new rows to datatable.
+                            $table.rows.add(JSON.parse(data)).draw();
+                        }
+                    });
+                } else {
+                    alert('Please choose file.');// No file.
+                }
+            });
+        });
+        </script>
+    </body>
+</html>
