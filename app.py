@@ -7,13 +7,15 @@ UPLOAD_FOLDER = './files'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/')
-def index():
-   return render_template('index.html')
+@app.route('/db/uploadjson')
+def uploadjson():
+    alldatas = get_all_data()
+    return render_template('upload.html',alldatas=alldatas)
 
 @app.route('/upload', methods=['POST'])
-def upload():
-    # as usual, use request to get the uploaded file, 'file' is because the input name="file"
+def upload():  
+
+     # as usual, use request to get the uploaded file, 'file' is because the input name="file"
     file = request.files['file']
     filename = file.filename
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
